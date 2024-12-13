@@ -6,6 +6,56 @@ import axios from "axios";
 import { FaStar, FaRegStar } from "react-icons/fa";
 
 const ProductDescription = () => {
+
+
+  // User Website ma Stay bhaeko Time
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0); 
+  let startTime = null;
+  let lastTime = parseFloat(sessionStorage.getItem('timeSpent')) || 0;
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (startTime) {
+          lastTime += (Date.now() - startTime) / 1000; 
+          setTimeSpent(lastTime);
+          sessionStorage.setItem('timeSpent', lastTime); 
+        }
+      } else {
+        startTime = Date.now(); 
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      if (startTime) {
+        lastTime += (Date.now() - startTime) / 1000; 
+        setTimeSpent(lastTime);
+        sessionStorage.setItem('timeSpent', lastTime); 
+      }
+    };
+
+    startTime = Date.now(); 
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    setTimeSpent(lastTime);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []); 
+
+  useEffect(() => {
+    setTotalTimeSpent(timeSpent.toFixed(2));
+  }, [timeSpent]);
+
+  // console.log(totalTimeSpent); 
+
+
+
   const { productsId } = useParams();
   const [product, setProduct] = useState(null);
   const [farmerData, setFarmerData] = useState(null);
@@ -13,6 +63,8 @@ const ProductDescription = () => {
   const [error, setError] = useState(null);
   const [farmerId, setFarmerId] = useState("");
   const [farmerInfo, setFarmerInfo] = useState(null);
+
+  const [productWithReview , setProductWithReview] = useState({});
 
   const [reviewData, setReviewData] = useState({
     rating: "",
@@ -48,6 +100,7 @@ const ProductDescription = () => {
           `http://192.168.137.1:8000/api/v1/public/product-app/products/${productsId}`
         );
         const productData = productResponse.data;
+        setProductWithReview(productData);
         setProduct(productData);
 
         // If farmerId exists, fetch farmer data
@@ -253,7 +306,7 @@ const ProductDescription = () => {
           <h2 className="text-black text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
             REVIEWS :
           </h2>
-          {reviews.map((review) => (
+          {productWithReview.reviews.map((review) => (
             <div
               key={review.id}
               className="bg-whiterounded-lg p-6 mb-6 flex items-start gap-4 "
@@ -264,8 +317,8 @@ const ProductDescription = () => {
                 }`}
               >
                 <img
-                  src={review.image || "/defaultImage/unknownImage.jpg"}
-                  alt={review.name}
+                  src={review.createdBy.photo || "/defaultImage/unknownImage.jpg"}
+                  alt={review.createdBy.fullName}
                   className={`rounded-full ${
                     !farmerInfo ? "w-24 h-24" : "w-16 h-16"
                   } object-cover border-2 border-yellow-400 shadow-md`}
@@ -274,7 +327,7 @@ const ProductDescription = () => {
 
               <div>
                 <h3 className="text-gray-800 font-semibold text-lg mb-2">
-                  {review.name || "Anonymous"}
+                  {review.createdBy.fullName || "Anonymous"}
                 </h3>
 
                 <div className="mb-2 flex">
@@ -289,7 +342,7 @@ const ProductDescription = () => {
                 </div>
 
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  {review.review || "No review provided."}
+                  {review.reviewMessage || "No review provided."}
                 </p>
               </div>
             </div>

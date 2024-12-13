@@ -9,12 +9,13 @@ const ProductCard = ({
   cardName,
   unit,
   onClick,
+  totalReviews
 }) => {
   const maxStars = 5;
 
   return (
     <div
-      className="w-full max-w-xs mx-auto border rounded-lg shadow-lg hover:shadow-xl overflow-hidden transition-shadow duration-300 bg-white"
+      className="w-full max-w-xs border rounded-lg shadow-lg hover:shadow-xl overflow-hidden transition-shadow duration-300 bg-white cursor-pointer "
       onClick={onClick}
     >
       <div className="relative">
@@ -46,7 +47,7 @@ const ProductCard = ({
               <FaRegStar key={index} size={12} />
             )
           )}
-          <span className="text-xs text-gray-500 ml-1">(65)</span>
+          <span className="text-xs text-gray-500 ml-1">({totalReviews})</span>
         </div>
 
         <div className="mt-2">
