@@ -1,11 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/Components/ui/card";
 import { FaStar, FaRegStar } from "react-icons/fa";
 
 const ProductCard = ({
@@ -20,39 +12,49 @@ const ProductCard = ({
   const maxStars = 5;
 
   return (
-    <Card className="w-64 border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <CardHeader>
-        <div className="relative flex justify-center">
-          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded">
+    <div className="w-full max-w-xs mx-auto border rounded-lg shadow-lg hover:shadow-xl overflow-hidden transition-shadow duration-300 bg-white">
+      
+      <div className="relative">
+        {percentDisc && (
+          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded shadow-md">
             {percentDisc}
           </span>
-          <img
-            src={imageUrl}
-            alt={cardName}
-            className="w-full h-40 object-cover rounded-t-lg"
-          />
-        </div>
-      </CardHeader>
-      <CardContent className="text-center">
-        <CardTitle className="text-lg font-bold">{cardName}</CardTitle>
-        <CardDescription>
-          <span className="line-through text-gray-500">Rs.{actualPrice}</span>{" "}
-          <span className="text-green-600 text-xl font-bold">Rs.{discountPrice}</span>
-          <span className="text-black font-bold"> per {unit}</span>
-        </CardDescription>
-      </CardContent>
-      <CardFooter>
-        <div className="flex justify-center w-full space-x-1 text-yellow-400">
+        )}
+        <img
+          src={imageUrl}
+          alt={cardName}
+          className="w-full h-64 object-cover"
+        />
+      </div>
+
+     
+      <div className="p-4">
+        
+        <h3 className="text-sm text-gray-800 truncate font-bold" title={cardName}>
+          {cardName}
+        </h3>
+
+        
+        <div className="flex items-center space-x-1 mt-1 text-yellow-400">
           {Array.from({ length: maxStars }).map((_, index) =>
             index < starRating ? (
-              <FaStar key={index} />
+              <FaStar key={index} size={12} />
             ) : (
-              <FaRegStar key={index} />
+              <FaRegStar key={index} size={12} />
             )
           )}
+          <span className="text-xs text-gray-500 ml-1">(65)</span>
         </div>
-      </CardFooter>
-    </Card>
+
+        
+        <div className="mt-2">
+          <span className="line-through text-gray-500 text-xs">Rs.{actualPrice}</span>
+          <span className="text-xl font-bold text-green-600 ml-2">Rs.{discountPrice}</span>
+        </div>
+
+        {unit && <p className="text-sm text-gray-500 mt-1">per {unit}</p>}
+      </div>
+    </div>
   );
 };
 
