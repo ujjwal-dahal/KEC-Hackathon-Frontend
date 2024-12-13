@@ -33,7 +33,7 @@ const ProductDescription = () => {
   };
 
   const handleSubmit = (e) => {
-    // console.log(reviewData)
+    console.log(reviewData)
     e.preventDefault();
   };
 
@@ -245,22 +245,33 @@ const ProductDescription = () => {
         )}
 
         {/* Reviews Section */}
-        <div className="mb-10 bg-white shadow-lg rounded-lg p-6 w-1/2">
+        <div
+          className={`mb-10 bg-gray-50 rounded-lg p-6 ${
+            !farmerInfo ? "w-full" : "w-1/2"
+          }`}
+        >
           <h2 className="text-black text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
             REVIEWS :
           </h2>
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="bg-whiterounded-lg p-6 mb-6 flex items-start gap-4 hover:shadow-md transition-shadow"
+              className="bg-whiterounded-lg p-6 mb-6 flex items-start gap-4 "
             >
-              <div className="w-[200px]">
+              <div
+                className={`w-[200px] ${
+                  !farmerInfo ? "flex justify-start items-center -mr-10" : ""
+                }`}
+              >
                 <img
                   src={review.image || "/defaultImage/unknownImage.jpg"}
                   alt={review.name}
-                  className="rounded-full w-16 h-16 object-cover border-2 border-yellow-400 shadow-md"
+                  className={`rounded-full ${
+                    !farmerInfo ? "w-24 h-24" : "w-16 h-16"
+                  } object-cover border-2 border-yellow-400 shadow-md`}
                 />
               </div>
+
               <div>
                 <h3 className="text-gray-800 font-semibold text-lg mb-2">
                   {review.name || "Anonymous"}
@@ -289,7 +300,7 @@ const ProductDescription = () => {
       {/* Review Section */}
 
       <div className="flex justify-center items-center bg-gray-50 mb-20">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl flex flex-col items-center">
+        <div className="bg-gray-100 p-8 rounded-lg  w-full mx-44  flex flex-col items-center">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
             Write a Review
           </h1>

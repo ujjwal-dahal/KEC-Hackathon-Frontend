@@ -58,7 +58,7 @@ const Ratings = ({ onRatingSelect }) => {
       </ul>
 
       <button
-        className="mt-8 bg-red-500 border-2 border-transparent text-white px-5 py-2 rounded-lg hover:bg-transparent hover:border-2 hover:border-red-500 hover:text-red-500 transition-all duration-300"
+        className="mt-8 bg-green-500 border-2 border-transparent text-white px-5 py-2 rounded-lg hover:bg-transparent hover:border-2 hover:border-green-500 hover:text-green-500 transition-all duration-300"
         onClick={handleClearFilter}
       >
         Clear Filter
