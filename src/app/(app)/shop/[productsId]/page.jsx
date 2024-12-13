@@ -8,10 +8,11 @@ import { FaStar, FaRegStar } from "react-icons/fa";
 const ProductDescription = () => {
   const { productsId } = useParams();
   const [product, setProduct] = useState(null);
-  const [farmer, setFarmer] = useState(null);
+  const [farmerData, setFarmerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [farmerId, setFarmerId] = useState("");
+  const [farmerInfo, setFarmerInfo] = useState(null);
 
   const [reviewData, setReviewData] = useState({
     rating: "",
@@ -32,8 +33,8 @@ const ProductDescription = () => {
   };
 
   const handleSubmit = (e) => {
+    // console.log(reviewData)
     e.preventDefault();
-    console.log(reviewData);
   };
 
   // Fetch product data and farmer data
@@ -50,19 +51,22 @@ const ProductDescription = () => {
         setProduct(productData);
 
         // If farmerId exists, fetch farmer data
-        const farmerId = productData?.farmer?.id;
+        if (productData?.farmer != null) {
+          setFarmerData(productData.farmer);
+          console.log(productData.farmer);
+        }
+
         if (farmerId) {
           try {
             const farmerResponse = await axios.get(
-              `http://192.168.137.1:8000/api/v1/public/business-app/business-info/2`
+              `http://192.168.137.1:8000/api/v1/public/business-app/business-info/${farmerId}`
             );
-            setFarmer(farmerResponse.data.farmer);
+            setFarmerInfo(farmerResponse.data.farmer);
           } catch (farmerError) {
             if (farmerError.response?.status === 404) {
-              // Handle 404: Farmer data not found
-              setFarmer(null);
+              setFarmerInfo(null);
             } else {
-              throw farmerError; // Re-throw for non-404 errors
+              throw farmerError;
             }
           }
         }
@@ -78,35 +82,6 @@ const ProductDescription = () => {
       fetchProductAndFarmerData();
     }
   }, [productsId]);
-
-  // // Fetch seller data
-  // useEffect(() => {
-  //   const fetchSellerData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `http://192.168.137.1:8000/api/v1/public/business-app/business-info/${farmerId}`
-  //       );
-  //       setFarmer(response.data.farmer);
-  //       setLoading(false);
-  //     } catch (err) {
-  //       setError("Failed to load seller data");
-  //       setLoading(false);
-  //     }
-  //   };
-  //   if (farmerId) {
-  //     fetchSellerData();
-  //   }
-  // }, [farmerId]);
-
-  // const farmer = {
-  //   name: "John Doe",
-  //   contact: "+977-9812345678",
-  //   businessType: "Organic Farming",
-  //   backgroundStory:
-  //     "John has been dedicated to organic farming for over a decade, focusing on sustainable and eco-friendly practices.",
-  //   profileImage: "/defaultImage/unknownImage.jpg",
-  //   location: { lat: 27.7172, lng: 85.324 },
-  // };
 
   // Temporary Additional Info & Reviews
   const additionalInfo = {
@@ -137,8 +112,8 @@ const ProductDescription = () => {
   ];
 
   const handleLocateSeller = () => {
-    if (farmer?.location) {
-      const locationUrl = `https://www.google.com/maps?q=${farmer.location.lat},${farmer.location.lng}`;
+    if (farmerData?.location) {
+      const locationUrl = `https://www.google.com/maps?q=${farmerData.location.lat},${farmerData.location.lng}`;
       window.open(locationUrl, "_blank");
     }
   };
@@ -188,76 +163,86 @@ const ProductDescription = () => {
       </div>
 
       {/* Farmer details section */}
-      <div className="min-h-72 bg-gray-100 flex items-center rounded-xl mb-10 justify-center mx-48 py-2">
-        <div className="w-full sm:w-1/2 lg:w-1/3 flex justify-center items-center p-6 sm:p-8">
-          <img
-            src={farmer?.profileImage || "/defaultImage/defaultImage.avif"}
-            alt={farmer?.name || "Farmer Image"}
-            className="h-40 w-40 object-cover rounded-full border-4 border-yellow-400"
-          />
-        </div>
-        <div className="max-w-4xl bg-transparent rounded-lg overflow-hidden flex flex-col sm:flex-row w-full sm:w-1/2 lg:w-2/3 p-6 sm:p-10 -ml-24">
-          <div className="flex flex-col justify-between">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-black mb-6 capitalize pl-2 border-l-8 border-yellow-400">
-                Farmer Info
-              </h1>
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
-                <p>
-                  <strong>Name:</strong> {farmer?.name || "Farmer's Name"}{" "}
-                </p>
-                <p>
-                  <strong>Contact:</strong> {farmer?.contact || "N/A"}{" "}
-                </p>
-                <p>
-                  <strong>Business Type:</strong>{" "}
-                  {farmer?.businessType || "N/A"}{" "}
-                </p>
-                <p>
-                  <strong>Background Story:</strong>{" "}
-                  {farmer?.backgroundStory || "No story available."}
-                </p>
-              </p>
+      {farmerData && (
+        <>
+          <div className="min-h-72 bg-gray-100 flex items-center rounded-xl mb-10 justify-center mx-48 py-2">
+            <div className="w-full sm:w-1/2 lg:w-1/3 flex justify-center items-center p-6 sm:p-8">
+              <img
+                src={farmerData?.photo || "/defaultImage/defaultImage.avif"}
+                alt={farmerData?.name || "Farmer Image"}
+                className="h-40 w-40 object-cover rounded-full border-4 border-yellow-400"
+              />
             </div>
+            <div className="max-w-4xl bg-transparent rounded-lg overflow-hidden flex flex-col sm:flex-row w-full sm:w-1/2 lg:w-2/3 p-6 sm:p-10 -ml-24">
+              <div className="flex flex-col justify-between">
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-semibold text-black mb-6 capitalize pl-2 border-l-8 border-yellow-400">
+                    Farmer Info
+                  </h1>
+                  <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+                    <p>
+                      <strong>Name:</strong>{" "}
+                      {farmerData?.fullName || "Farmer's Name"}{" "}
+                    </p>
+                    <p>
+                      <strong>Contact:</strong> {farmerData?.contactNo || "N/A"}{" "}
+                    </p>
+                    <p>
+                      <strong>Business Type:</strong>{" "}
+                      {farmerData?.businessType || "N/A"}{" "}
+                    </p>
+                    <p>
+                      <strong>Background Story:</strong>{" "}
+                      {farmerData?.backgroundStory || "No story available."}
+                    </p>
+                  </p>
+                </div>
 
-            {/* Location and Map */}
-            <div className="mt-6">
-              {farmer?.location ? (
-                <button
-                  onClick={handleLocateSeller}
-                  className="px-4 py-2 bg-black text-white rounded-md"
-                >
-                  Locate Seller
-                </button>
-              ) : (
-                <p className="text-gray-500">Location not available</p>
-              )}
+                {/* Location and Map */}
+                <div className="mt-6">
+                  {farmerData?.location ? (
+                    <button
+                      onClick={handleLocateSeller}
+                      className="px-4 py-2 bg-black text-white rounded-md"
+                    >
+                      Locate Seller
+                    </button>
+                  ) : (
+                    <p className="text-gray-500">Location not available</p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
+        </>
+      )}
       {/* Additional Info & Reviews */}
       <div className="p-6 font-sans bg-gray-50 mx-44 flex gap-7">
         {/* Additional Info Section */}
-        <div className="mb-10 bg-white shadow-lg rounded-lg p-6 w-1/2 ">
-          <h2 className="text-black uppercase text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
-            ADDITIONAL INFO :
-          </h2>
+        {farmerInfo && (
+          <>
+            <div className="mb-10 bg-white shadow-lg rounded-lg p-6 w-1/2 ">
+              <h2 className="text-black uppercase text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
+                business into :
+              </h2>
 
-          <ul className="list-none space-y-4">
-            {Object.entries(additionalInfo).map(([key, value], index) => (
-              <li key={index} className="text-gray-700 flex items-center">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center">
-                  <span className="font-semibold w-40 uppercase text-sm text-gray-600">
-                    {key.replace(/([A-Z])/g, " $1")}:
-                  </span>
-                  <span className="ml-2 text-gray-800 text-base">{value}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+              <ul className="list-none space-y-4">
+                {Object.entries(additionalInfo).map(([key, value], index) => (
+                  <li key={index} className="text-gray-700 flex items-center">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                      <span className="font-semibold w-40 uppercase text-sm text-gray-600">
+                        {key.replace(/([A-Z])/g, " $1")}:
+                      </span>
+                      <span className="ml-2 text-gray-800 text-base">
+                        {value}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
 
         {/* Reviews Section */}
         <div className="mb-10 bg-white shadow-lg rounded-lg p-6 w-1/2">
@@ -302,6 +287,7 @@ const ProductDescription = () => {
       </div>
 
       {/* Review Section */}
+
       <div className="flex justify-center items-center bg-gray-50 mb-20">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl flex flex-col items-center">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
@@ -315,20 +301,26 @@ const ProductDescription = () => {
               >
                 Rating
               </label>
-              <select
-                id="rating"
-                name="rating"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                value={reviewData.rating}
-                onChange={handleChange}
-              >
-                <option value="">Select a rating</option>
-                <option value="1">1 - Poor</option>
-                <option value="2">2 - Fair</option>
-                <option value="3">3 - Good</option>
-                <option value="4">4 - Very Good</option>
-                <option value="5">5 - Excellent</option>
-              </select>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    onClick={() =>
+                      setReviewData((prevData) => ({
+                        ...prevData,
+                        rating: star,
+                      }))
+                    }
+                    className="cursor-pointer"
+                  >
+                    {reviewData.rating >= star ? (
+                      <FaStar className="text-yellow-400 text-2xl" />
+                    ) : (
+                      <FaRegStar className="text-gray-300 text-2xl" />
+                    )}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
