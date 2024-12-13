@@ -50,9 +50,9 @@ const ProductCard = ({
         <div className="mt-2">
           <span className="line-through text-gray-500 text-xs">Rs.{actualPrice}</span>
           <span className="text-xl font-bold text-green-600 ml-2">Rs.{discountPrice}</span>
+          {unit && <p className="text-sm text-gray-500 mt-1 inline-block ml-1">per {unit}</p>}
         </div>
 
-        {unit && <p className="text-sm text-gray-500 mt-1">per {unit}</p>}
       </div>
     </div>
   );

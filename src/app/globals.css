@@ -2,12 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
     --radius: 0.5rem;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #f9fafb; 
+    color: #111827; 
+    line-height: 1.5; 
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium text-white transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-300;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-500 hover:bg-gray-600 focus:ring-2 focus:ring-gray-300;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .rounded-sm {
+    border-radius: var(--radius);
   }
 }
