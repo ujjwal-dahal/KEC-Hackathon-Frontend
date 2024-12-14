@@ -6,55 +6,51 @@ import axios from "axios";
 import { FaStar, FaRegStar } from "react-icons/fa";
 
 const ProductDescription = () => {
-
-
   // User Website ma Stay bhaeko Time
   const [timeSpent, setTimeSpent] = useState(0);
-  const [totalTimeSpent, setTotalTimeSpent] = useState(0); 
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
   let startTime = null;
-  let lastTime = parseFloat(sessionStorage.getItem('timeSpent')) || 0;
+  let lastTime = parseFloat(sessionStorage.getItem("timeSpent")) || 0;
 
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
         if (startTime) {
-          lastTime += (Date.now() - startTime) / 1000; 
+          lastTime += (Date.now() - startTime) / 1000;
           setTimeSpent(lastTime);
-          sessionStorage.setItem('timeSpent', lastTime); 
+          sessionStorage.setItem("timeSpent", lastTime);
         }
       } else {
-        startTime = Date.now(); 
+        startTime = Date.now();
       }
     };
 
     const handleBeforeUnload = () => {
       if (startTime) {
-        lastTime += (Date.now() - startTime) / 1000; 
+        lastTime += (Date.now() - startTime) / 1000;
         setTimeSpent(lastTime);
-        sessionStorage.setItem('timeSpent', lastTime); 
+        sessionStorage.setItem("timeSpent", lastTime);
       }
     };
 
-    startTime = Date.now(); 
+    startTime = Date.now();
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     setTimeSpent(lastTime);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []); 
+  }, []);
 
   useEffect(() => {
     setTotalTimeSpent(timeSpent.toFixed(2));
   }, [timeSpent]);
 
-  // console.log(totalTimeSpent); 
-
-
+  // console.log(totalTimeSpent);
 
   const { productsId } = useParams();
   const [product, setProduct] = useState(null);
@@ -64,7 +60,7 @@ const ProductDescription = () => {
   const [farmerId, setFarmerId] = useState("");
   const [farmerInfo, setFarmerInfo] = useState(null);
 
-  const [productWithReview , setProductWithReview] = useState({});
+  const [productWithReview, setProductWithReview] = useState({});
 
   const [reviewData, setReviewData] = useState({
     rating: "",
@@ -85,7 +81,7 @@ const ProductDescription = () => {
   };
 
   const handleSubmit = (e) => {
-    console.log(reviewData)
+    console.log(reviewData);
     e.preventDefault();
   };
 
@@ -147,23 +143,6 @@ const ProductDescription = () => {
     batteryLife: "Approximately 3 years on CR2016 battery",
   };
 
-  const reviews = [
-    {
-      id: 1,
-      name: "Marcus Jones",
-      rating: 5,
-      review:
-        "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled.",
-    },
-    {
-      id: 2,
-      name: "Marcus Jones",
-      rating: 3,
-      review:
-        "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled.",
-    },
-  ];
-
   const handleLocateSeller = () => {
     if (farmerData?.location) {
       const locationUrl = `https://www.google.com/maps?q=${farmerData.location.lat},${farmerData.location.lng}`;
@@ -176,10 +155,10 @@ const ProductDescription = () => {
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <>
+    <div className="flex flex-col items-center">
       {/* Product Info */}
       <div className="min-h-72 bg-gray-50 flex items-center justify-center px-6 py-7">
-        <div className="w-full sm:w-1/2 lg:w-1/3 flex justify-center items-center p-6 sm:p-8">
+        <div className="w-full mb-20 sm:w-1/2 lg:w-1/2 flex justify-center items-center p-6 sm:p-8">
           <img
             src={product?.featuredImage || "/defaultImage/defaultImage.avif"}
             alt={product?.name || "Product Image"}
@@ -218,21 +197,21 @@ const ProductDescription = () => {
       {/* Farmer details section */}
       {farmerData && (
         <>
-          <div className="min-h-72 bg-gray-100 flex items-center rounded-xl mb-10 justify-center mx-48 py-2">
+          <div className="min-h-72 w-[60rem] bg-gray-100 flex items-center rounded-xl mb-10 justify-between mx-48 py-2">
             <div className="w-full sm:w-1/2 lg:w-1/3 flex justify-center items-center p-6 sm:p-8">
               <img
                 src={farmerData?.photo || "/defaultImage/defaultImage.avif"}
                 alt={farmerData?.name || "Farmer Image"}
-                className="h-40 w-40 object-cover rounded-full border-4 border-yellow-400"
+                className="h-56 w-56 -mr-40 object-cover rounded-lg"
               />
             </div>
-            <div className="max-w-4xl bg-transparent rounded-lg overflow-hidden flex flex-col sm:flex-row w-full sm:w-1/2 lg:w-2/3 p-6 sm:p-10 -ml-24">
+            <div className="max-w-lg bg-transparent rounded-lg overflow-hidden flex flex-col sm:flex-row w-full sm:w-1/2 lg:w-2/3 p-6 sm:p-10 -ml-24">
               <div className="flex flex-col justify-between">
                 <div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-black mb-6 capitalize pl-2 border-l-8 border-yellow-400">
                     Farmer Info
                   </h1>
-                  <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+                  <p className="text-gray-600 text-base sm:text-lg leading-relaxed pl-10">
                     <p>
                       <strong>Name:</strong>{" "}
                       {farmerData?.fullName || "Farmer's Name"}{" "}
@@ -252,7 +231,7 @@ const ProductDescription = () => {
                 </div>
 
                 {/* Location and Map */}
-                <div className="mt-6">
+                <div className="mt-6 pl-10">
                   {farmerData?.location ? (
                     <button
                       onClick={handleLocateSeller}
@@ -298,74 +277,79 @@ const ProductDescription = () => {
         )}
 
         {/* Reviews Section */}
-        <div
-          className={`mb-10 bg-gray-50 rounded-lg p-6 ${
-            !farmerInfo ? "w-full" : "w-1/2"
-          }`}
-        >
-          <h2 className="text-black text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
-            REVIEWS :
-          </h2>
-          {productWithReview.reviews.map((review) => (
-            <div
-              key={review.id}
-              className="bg-whiterounded-lg p-6 mb-6 flex items-start gap-4 "
-            >
+        
+          <div
+            className={`mb-10 bg-gray-50 rounded-lg p-6 ${
+              !farmerInfo ? "w-full" : "w-1/2"
+            }`}
+          >
+            {productWithReview.reviews.length != 0 && (<h2 className="text-black text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
+              REVIEWS :
+            </h2>)}
+            {productWithReview.reviews.map((review) => (
               <div
-                className={`w-[200px] ${
-                  !farmerInfo ? "flex justify-start items-center -mr-10" : ""
-                }`}
+                key={review.id}
+                className="bg-whiterounded-lg p-6 mb-6 flex items-start gap-4 "
               >
-                <img
-                  src={review.createdBy.photo || "/defaultImage/unknownImage.jpg"}
-                  alt={review.createdBy.fullName}
-                  className={`rounded-full ${
-                    !farmerInfo ? "w-24 h-24" : "w-16 h-16"
-                  } object-cover border-2 border-yellow-400 shadow-md`}
-                />
-              </div>
-
-              <div>
-                <h3 className="text-gray-800 font-semibold text-lg mb-2">
-                  {review.createdBy.fullName || "Anonymous"}
-                </h3>
-
-                <div className="mb-2 flex">
-                  {[...Array(5)].map((_, i) => (
-                    <FaStar
-                      key={i}
-                      className={`text-lg ${
-                        i < review.rating ? "text-yellow-400" : "text-gray-300"
-                      }`}
-                    />
-                  ))}
+                <div
+                  className={`w-[200px] ${
+                    !farmerInfo ? "flex justify-start items-center -mr-10" : ""
+                  }`}
+                >
+                  <img
+                    src={
+                      review.createdBy.photo || "/defaultImage/unknownImage.jpg"
+                    }
+                    alt={review.createdBy.fullName}
+                    className={`rounded-full ${
+                      !farmerInfo ? "w-24 h-24" : "w-16 h-16"
+                    } object-cover border-2 border-yellow-400 shadow-md`}
+                  />
                 </div>
 
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {review.reviewMessage || "No review provided."}
-                </p>
+                <div>
+                  <h3 className="text-gray-800 font-semibold text-lg mb-2">
+                    {review.createdBy.fullName || "Anonymous"}
+                  </h3>
+
+                  <div className="mb-2 flex">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar
+                        key={i}
+                        className={`text-lg ${
+                          i < review.rating
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {review.reviewMessage || "No review provided."}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
       </div>
 
       {/* Review Section */}
 
-      <div className="flex justify-center items-center bg-gray-50 mb-20">
-        <div className="bg-gray-100 p-8 rounded-lg  w-full mx-44  flex flex-col items-center">
-          <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+      <div className="flex w-[100rem] justify-center items-center bg-gray-50 py-20">
+        <div className="bg-gray-100  p-8 rounded-lg w-full max-w-4xl mx-4 ">
+          <h1 className="text-3xl font-semibold text-center text-gray-800 mb-8">
             Write a Review
           </h1>
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
+            <div className="mb-6">
               <label
                 htmlFor="rating"
-                className="block text-gray-700 font-medium mb-2"
+                className="block text-gray-700 font-medium mb-2 text-center"
               >
                 Rating
               </label>
-              <div className="flex gap-2">
+              <div className="flex justify-center gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
                     key={star}
@@ -378,16 +362,16 @@ const ProductDescription = () => {
                     className="cursor-pointer"
                   >
                     {reviewData.rating >= star ? (
-                      <FaStar className="text-yellow-400 text-2xl" />
+                      <FaStar className="text-yellow-400 text-3xl" />
                     ) : (
-                      <FaRegStar className="text-gray-300 text-2xl" />
+                      <FaRegStar className="text-gray-300 text-3xl" />
                     )}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label
                   htmlFor="name"
@@ -424,7 +408,7 @@ const ProductDescription = () => {
               </div>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-6">
               <label
                 htmlFor="description"
                 className="block text-gray-700 font-medium mb-2"
@@ -435,7 +419,7 @@ const ProductDescription = () => {
                 id="description"
                 name="description"
                 placeholder="Write your review here..."
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 h-32 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 h-40 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 value={reviewData.description}
                 onChange={handleChange}
               ></textarea>
@@ -443,14 +427,14 @@ const ProductDescription = () => {
 
             <button
               type="submit"
-              className="w-full bg-yellow-400 text-black font-bold py-2 rounded-lg hover:bg-black transition-all duration-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+              className="w-full bg-yellow-500 text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
             >
               Submit
             </button>
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
