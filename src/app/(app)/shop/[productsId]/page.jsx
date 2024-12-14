@@ -80,11 +80,6 @@ const ProductDescription = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    console.log(reviewData);
-    e.preventDefault();
-  };
-
   // Fetch product data and farmer data
   useEffect(() => {
     const fetchProductAndFarmerData = async () => {
@@ -99,7 +94,6 @@ const ProductDescription = () => {
         setProductWithReview(productData);
         setProduct(productData);
 
-        // If farmerId exists, fetch farmer data
         if (productData?.farmer != null) {
           setFarmerData(productData.farmer);
           console.log(productData.farmer);
@@ -141,6 +135,43 @@ const ProductDescription = () => {
     specialFeatures:
       "Shock-resistant, world time, stopwatch, and countdown timer",
     batteryLife: "Approximately 3 years on CR2016 battery",
+  };
+
+  const handleReview = async (event) => {
+    event.preventDefault();
+
+    if (
+      !reviewData.rating ||
+      !reviewData.name ||
+      !reviewData.email ||
+      !reviewData.description
+    ) {
+      alert("All fields are required.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://192.168.137.1:8000/api/v1/public/product-app/product-review/create",
+        reviewData
+      );
+      console.log("Review Submitted Successfully", response.data);
+      alert("Review submitted successfully!");
+      setReviewData({
+        rating: "",
+        name: "",
+        email: "",
+        description: "",
+      });
+    } catch (error) {
+      if (error.response) {
+        console.error("Response error:", error.response.data);
+      } else if (error.request) {
+        console.error("Request error:", error.request);
+      } else {
+        console.error("Error:", error.message);
+      }
+    }
   };
 
   const handleLocateSeller = () => {
@@ -211,7 +242,7 @@ const ProductDescription = () => {
                   <h1 className="text-xl sm:text-2xl font-semibold text-black mb-6 capitalize pl-2 border-l-8 border-yellow-400">
                     Farmer Info
                   </h1>
-                  <p className="text-gray-600 text-base sm:text-lg leading-relaxed pl-10">
+                  <div className="text-gray-600 text-base sm:text-lg leading-relaxed pl-10">
                     <p>
                       <strong>Name:</strong>{" "}
                       {farmerData?.fullName || "Farmer's Name"}{" "}
@@ -227,7 +258,7 @@ const ProductDescription = () => {
                       <strong>Background Story:</strong>{" "}
                       {farmerData?.backgroundStory || "No story available."}
                     </p>
-                  </p>
+                  </div>
                 </div>
 
                 {/* Location and Map */}
@@ -235,7 +266,7 @@ const ProductDescription = () => {
                   {farmerData?.location ? (
                     <button
                       onClick={handleLocateSeller}
-                      className="px-4 py-2 bg-black text-white rounded-md"
+                      className="px-6 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 focus:ring-4 focus:ring-yellow-300 transition duration-200"
                     >
                       Locate Seller
                     </button>
@@ -277,71 +308,63 @@ const ProductDescription = () => {
         )}
 
         {/* Reviews Section */}
-        
-          <div
-            className={`mb-10 bg-gray-50 rounded-lg p-6 ${
-              !farmerInfo ? "w-full" : "w-1/2"
-            }`}
-          >
-            {productWithReview.reviews.length != 0 && (<h2 className="text-black text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
+
+        <div
+          className={`-mb-24 bg-gray-50 rounded-lg p-6 ${
+            !farmerInfo ? "w-full" : "w-1/2"
+          }`}
+        >
+          {productWithReview.reviews.length != 0 && (
+            <h2 className="text-black text-2xl font-bold border-b-4 border-yellow-400 pb-2 mb-4 inline-block">
               REVIEWS :
-            </h2>)}
+            </h2>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {productWithReview.reviews.map((review) => (
               <div
                 key={review.id}
-                className="bg-whiterounded-lg p-6 mb-6 flex items-start gap-4 "
+                className="bg-white shadow-lg rounded-lg p-6 flex items-start gap-4"
               >
-                <div
-                  className={`w-[200px] ${
-                    !farmerInfo ? "flex justify-start items-center -mr-10" : ""
-                  }`}
-                >
-                  <img
-                    src={
-                      review.createdBy.photo || "/defaultImage/unknownImage.jpg"
-                    }
-                    alt={review.createdBy.fullName}
-                    className={`rounded-full ${
-                      !farmerInfo ? "w-24 h-24" : "w-16 h-16"
-                    } object-cover border-2 border-yellow-400 shadow-md`}
-                  />
-                </div>
-
+                <img
+                  src={
+                    review.createdBy.photo || "/defaultImage/unknownImage.jpg"
+                  }
+                  alt={review.createdBy.fullName}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-yellow-400 shadow-sm"
+                />
                 <div>
-                  <h3 className="text-gray-800 font-semibold text-lg mb-2">
+                  <h3 className="text-lg font-semibold text-gray-800">
                     {review.createdBy.fullName || "Anonymous"}
                   </h3>
-
-                  <div className="mb-2 flex">
+                  <div className="flex mb-2">
                     {[...Array(5)].map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-lg ${
+                        className={`text-sm ${
                           i < review.rating
-                            ? "text-yellow-400"
+                            ? "text-yellow-500"
                             : "text-gray-300"
                         }`}
                       />
                     ))}
                   </div>
-
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-sm text-gray-600">
                     {review.reviewMessage || "No review provided."}
                   </p>
                 </div>
               </div>
             ))}
           </div>
+        </div>
       </div>
 
       {/* Review Section */}
-
-      <div className="flex w-[100rem] justify-center items-center bg-gray-50 py-20">
+      <div className="flex mt-20 w-[100rem] justify-center items-center bg-gray-50 py-20">
         <div className="bg-gray-100  p-8 rounded-lg w-full max-w-4xl mx-4 ">
           <h1 className="text-3xl font-semibold text-center text-gray-800 mb-8">
             Write a Review
           </h1>
-          <form onSubmit={handleSubmit}>
+          <form method="post">
             <div className="mb-6">
               <label
                 htmlFor="rating"
@@ -428,6 +451,7 @@ const ProductDescription = () => {
             <button
               type="submit"
               className="w-full bg-yellow-500 text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+              onClick={handleReview}
             >
               Submit
             </button>
